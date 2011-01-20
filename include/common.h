@@ -6,7 +6,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <sys/types.h>
-#include <bits/endian.h>
 
 #ifdef WIN32
 #define fseeko fseeko64
@@ -24,49 +23,40 @@
 #define FLIPENDIAN(x) flipEndian((unsigned char *)(&(x)), sizeof(x))
 #define FLIPENDIANLE(x) flipEndianLE((unsigned char *)(&(x)), sizeof(x))
 
-#define IS_BIG_ENDIAN      0
-#define IS_LITTLE_ENDIAN   1
-
 #define TIME_OFFSET_FROM_UNIX 2082844800L
 #define APPLE_TO_UNIX_TIME(x) ((x) - TIME_OFFSET_FROM_UNIX)
 #define UNIX_TO_APPLE_TIME(x) ((x) + TIME_OFFSET_FROM_UNIX)
 
 #define ASSERT(x, m) if(!(x)) { fflush(stdout); fprintf(stderr, "error: %s\n", m); perror("error"); fflush(stderr); exit(1); }
 
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-	static char endianness = IS_LITTLE_ENDIAN;
-#elif __BYTE_ORDER == __BIG_ENDIAN
-	static char endianness = IS_BIG_ENDIAN;
-#endif
-
 static inline void flipEndian(unsigned char* x, int length) {
-  int i;
-  unsigned char tmp;
+#if BYTE_ORDER == BIG_ENDIAN
+	return;
+#else
+	int i;
+	unsigned char tmp;
 
-  if(endianness == IS_BIG_ENDIAN) {
-    return;
-  } else {
-    for(i = 0; i < (length / 2); i++) {
-      tmp = x[i];
-      x[i] = x[length - i - 1];
-      x[length - i - 1] = tmp;
-    }
-  }
+	for(i = 0; i < (length / 2); i++) {
+		tmp = x[i];
+		x[i] = x[length - i - 1];
+		x[length - i - 1] = tmp;
+	}
+#endif
 }
 
 static inline void flipEndianLE(unsigned char* x, int length) {
-  int i;
-  unsigned char tmp;
+#if	BYTE_ORDER == LITTLE_ENDIAN
+	return;
+#else
+	int i;
+	unsigned char tmp;
 
-  if(endianness == IS_LITTLE_ENDIAN) {
-    return;
-  } else {
-    for(i = 0; i < (length / 2); i++) {
-      tmp = x[i];
-      x[i] = x[length - i - 1];
-      x[length - i - 1] = tmp;
-    }
-  }
+	for(i = 0; i < (length / 2); i++) {
+		tmp = x[i];
+		x[i] = x[length - i - 1];
+		x[length - i - 1] = tmp;
+	}
+#endif
 }
 
 static inline void hexToBytes(const char* hex, uint8_t** buffer, size_t* bytes) {
