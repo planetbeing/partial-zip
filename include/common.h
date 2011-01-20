@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <sys/types.h>
+#include <bits/endian.h>
 
 #ifdef WIN32
 #define fseeko fseeko64
@@ -32,7 +33,11 @@
 
 #define ASSERT(x, m) if(!(x)) { fflush(stdout); fprintf(stderr, "error: %s\n", m); perror("error"); fflush(stderr); exit(1); }
 
-extern char endianness;
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+	static char endianness = IS_LITTLE_ENDIAN;
+#elif __BYTE_ORDER == __BIG_ENDIAN
+	static char endianness = IS_BIG_ENDIAN;
+#endif
 
 static inline void flipEndian(unsigned char* x, int length) {
   int i;
