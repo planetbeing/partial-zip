@@ -27,7 +27,7 @@ IF(BUILD_PARTIAL)
 	add_library(partial partial.c)
 	target_link_libraries(partial ${CURL_LIBRARIES} ${ZLIB_LIBRARIES})
 
-	add_executable(test test.c)
-	target_link_libraries(test partial)
+	add_executable(partialzip test.c)
+	target_link_libraries(partialzip partial)
 ENDIF(BUILD_PARTIAL)
 
