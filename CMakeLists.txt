@@ -24,10 +24,14 @@ IF(BUILD_PARTIAL)
 		add_definitions(-DCURL_STATICLIB)
 	ENDIF(WIN32)
 
-	add_library(partial partial.c)
+	add_library(partial SHARED partial.c)
 	target_link_libraries(partial ${CURL_LIBRARIES} ${ZLIB_LIBRARIES})
 
 	add_executable(partialzip test.c)
 	target_link_libraries(partialzip partial)
 ENDIF(BUILD_PARTIAL)
+
+install(TARGETS partialzip DESTINATION bin)
+install(TARGETS partial DESTINATION lib)
+install(FILES include/partial/partial.h DESTINATION include)
 
