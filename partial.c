@@ -43,7 +43,7 @@ static size_t receiveData(void* data, size_t size, size_t nmemb, void** pFileDat
 	return size * nmemb;
 }
 
-static CDFile* flipFiles(ZipInfo* info)
+static void flipFiles(ZipInfo* info)
 {
 	char* cur = info->centralDirectory;
 
@@ -181,7 +181,7 @@ ZipInfo* PartialZipInit(const char* url)
 
 		return info;
 	}
-	else 
+	else
 	{
 		curl_easy_cleanup(info->hIPSW);
 		free(info->url);
@@ -241,7 +241,7 @@ unsigned char* PartialZipGetFile(ZipInfo* info, CDFile* file)
 	char sRange[100];
 	sprintf(sRange, "%" PRIu64 "-%" PRIu64, start, end);
 
-	void* pFileHeader[] = {pLocalHeader, NULL, NULL, NULL}; 
+	void* pFileHeader[] = {pLocalHeader, NULL, NULL, NULL};
 
 	curl_easy_setopt(info->hIPSW, CURLOPT_URL, info->url);
 	curl_easy_setopt(info->hIPSW, CURLOPT_FOLLOWLOCATION, 1);
@@ -250,7 +250,7 @@ unsigned char* PartialZipGetFile(ZipInfo* info, CDFile* file)
 	curl_easy_setopt(info->hIPSW, CURLOPT_RANGE, sRange);
 	curl_easy_setopt(info->hIPSW, CURLOPT_HTTPGET, 1);
 	curl_easy_perform(info->hIPSW);
-	
+
 	FLIPENDIANLE(localHeader.signature);
 	FLIPENDIANLE(localHeader.versionExtract);
 	// FLIPENDIANLE(localHeader.flags);
@@ -265,7 +265,7 @@ unsigned char* PartialZipGetFile(ZipInfo* info, CDFile* file)
 
 	unsigned char* fileData = (unsigned char*) malloc(file->compressedSize);
 	size_t progress = 0;
-	void* pFileData[] = {fileData, info, file, &progress}; 
+	void* pFileData[] = {fileData, info, file, &progress};
 
 	start = file->offset + sizeof(LocalFile) + localHeader.lenFileName + localHeader.lenExtra;
 	end = start + file->compressedSize - 1;
